@@ -1,1 +1,489 @@
 
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A fictional Valheim home listing — a fan-made parody, not a real property advertisement.">
+  <title>Meadowhold — Valheim Homestead Listing</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231d2920'/%3E%3Cpath d='M10 32 32 13l22 19-5 1v19H15V33z' fill='%23f5ead4'/%3E%3Cpath d='M26 52V37h12v15M19 28h26' stroke='%23c56a36' stroke-width='5'/%3E%3C/svg%3E">
+  <style>
+    :root {
+      --ink: #172018;
+      --muted: #647066;
+      --paper: #f7f4ed;
+      --card: #fffdf8;
+      --forest: #1d3a2b;
+      --forest-2: #294d39;
+      --copper: #bf6438;
+      --gold: #dcae5c;
+      --line: #dcd8cc;
+      --shadow: 0 16px 45px rgba(25, 42, 30, .12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+    .site-header {
+      height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 max(24px, calc((100vw - 1240px) / 2));
+      color: white;
+      background: var(--forest);
+      border-bottom: 4px solid var(--copper);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 900; letter-spacing: -.03em; font-size: 1.25rem; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border: 2px solid var(--gold); transform: rotate(45deg); }
+    .brand-mark span { transform: rotate(-45deg); font-family: Georgia, serif; color: var(--gold); font-size: 1.15rem; }
+    .parody-tag { font-size: .78rem; letter-spacing: .08em; text-transform: uppercase; color: #dfe9df; }
+
+    main { max-width: 1240px; margin: 0 auto; padding: 28px 24px 64px; }
+    .toolbar { display: flex; justify-content: space-between; gap: 16px; align-items: center; margin-bottom: 20px; }
+    .breadcrumbs { color: var(--muted); font-size: .9rem; }
+    .actions { display: flex; gap: 10px; }
+    .btn {
+      border: 1px solid var(--line); border-radius: 999px; background: var(--card); color: var(--ink);
+      min-height: 42px; padding: 9px 16px; font-weight: 750; box-shadow: 0 3px 10px rgba(0,0,0,.04);
+    }
+    .btn:hover { border-color: var(--copper); }
+    .btn.primary { background: var(--forest); border-color: var(--forest); color: white; }
+    .btn[aria-pressed="true"] { background: var(--copper); border-color: var(--copper); color: white; }
+
+    .gallery {
+      display: grid; grid-template-columns: 1.55fr .75fr .75fr; grid-template-rows: 210px 210px;
+      gap: 10px; overflow: hidden; border-radius: 24px; background: #d7d5cd; box-shadow: var(--shadow);
+    }
+    .photo-slot { position: relative; min-height: 0; background: #dce2db; overflow: hidden; }
+    .photo-slot:has(img) { cursor: zoom-in; }
+    .photo-slot:focus-visible { outline: 4px solid var(--gold); outline-offset: -4px; }
+    .photo-slot:first-child { grid-row: 1 / 3; }
+    .placeholder {
+      width: 100%; height: 100%; color: #f7f4ed; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 7px; text-align: center; padding: 20px;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.05), rgba(0,0,0,.18)),
+        repeating-linear-gradient(45deg, #385844 0 18px, #34523f 18px 36px);
+    }
+    .photo-slot:nth-child(3n) .placeholder { background-color: #6f4c35; background-image: repeating-linear-gradient(-45deg, rgba(30,50,35,.3) 0 15px, rgba(255,255,255,.04) 15px 30px); }
+    .placeholder strong { font-size: 1rem; }
+    .placeholder small { max-width: 24ch; color: #ecf0e9; }
+    .photo-icon { width: 42px; height: 42px; border: 2px solid currentColor; border-radius: 10px; display: grid; place-items: center; font-size: 1.3rem; }
+
+    .listing-grid { display: grid; grid-template-columns: minmax(0, 1fr) 350px; gap: 38px; margin-top: 34px; align-items: start; }
+    .eyebrow { margin: 0 0 8px; color: var(--copper); font-weight: 850; text-transform: uppercase; letter-spacing: .11em; font-size: .8rem; }
+    h1 { margin: 0; font: 800 clamp(2.1rem, 5vw, 4rem)/1.02 Georgia, "Times New Roman", serif; letter-spacing: -.04em; }
+    .location { color: var(--muted); margin: 12px 0 22px; font-size: 1.05rem; }
+    .facts { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 30px; }
+    .fact { padding: 10px 14px; background: var(--card); border: 1px solid var(--line); border-radius: 999px; font-weight: 800; }
+    .fact span { color: var(--copper); }
+    .activity-strip { display: flex; flex-wrap: wrap; gap: 26px; padding: 18px 0 26px; color: var(--muted); }
+    .activity-strip strong { display: block; color: var(--ink); font-size: 1.12rem; }
+    section.copy { padding: 30px 0; border-top: 1px solid var(--line); }
+    h2 { margin: 0 0 14px; font: 800 1.55rem/1.2 Georgia, serif; letter-spacing: -.02em; }
+    .description { max-width: 70ch; margin: 0; color: #354138; }
+    .feature-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; margin-top: 20px; }
+    .feature { min-height: 100px; padding: 18px; background: var(--card); border: 1px solid var(--line); border-radius: 15px; }
+    .feature .rune { display: block; color: var(--copper); font-size: 1.35rem; margin-bottom: 8px; }
+    .feature strong { display: block; }
+    .feature p { margin: 4px 0 0; color: var(--muted); font-size: .93rem; }
+    .panel { margin-top: 18px; padding: 22px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); }
+    .panel-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 18px; }
+    .panel-head h3 { margin: 0; font: 800 1.15rem/1.2 Georgia, serif; }
+    .panel-head span { color: var(--muted); font-size: .82rem; }
+    .value-chart { width: 100%; height: auto; overflow: visible; }
+    .value-chart text { font-family: inherit; fill: var(--muted); font-size: 12px; }
+    .chart-line { fill: none; stroke: var(--copper); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+    .chart-area { fill: url(#valueFade); }
+    .chart-grid { stroke: #dedbd1; stroke-width: 1; }
+    .risk-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 10px; }
+    .risk { padding: 16px; border-radius: 14px; background: #f3f1ea; }
+    .risk-top { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 7px; }
+    .risk-score { color: var(--forest); font-weight: 850; }
+    .risk-bar { height: 7px; overflow: hidden; background: #d9d6cc; border-radius: 99px; }
+    .risk-bar i { display: block; height: 100%; border-radius: inherit; background: var(--gold); }
+    .landmarks { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+    .landmark { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: center; padding: 14px; border: 1px solid var(--line); border-radius: 14px; }
+    .landmark-icon { width: 42px; height: 42px; display: grid; place-items: center; border-radius: 50%; background: #edf1eb; font-size: 1.2rem; }
+    .landmark strong, .landmark small { display: block; }
+    .landmark small { color: var(--muted); }
+
+    .price-card { position: sticky; top: 20px; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+    .price { font: 800 2.15rem/1 Georgia, serif; }
+    .price-note { margin: 8px 0 22px; color: var(--muted); font-size: .88rem; }
+    .detail-row { display: flex; justify-content: space-between; gap: 20px; padding: 13px 0; border-top: 1px solid var(--line); }
+    .detail-row span:first-child { color: var(--muted); }
+    .card-cta { width: 100%; margin-top: 18px; padding: 13px 16px; border: 0; border-radius: 12px; background: var(--copper); color: white; font-weight: 850; }
+    .fine-print { margin: 14px 0 0; color: var(--muted); font-size: .78rem; text-align: center; }
+    .agent { margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); }
+    .agent-label { margin: 0 0 13px; color: var(--muted); font-size: .78rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .agent-profile { display: grid; grid-template-columns: 64px 1fr; gap: 13px; align-items: center; }
+    .agent-photo { width: 64px; height: 64px; border-radius: 50%; object-fit: cover; background: #dce2db; border: 3px solid #e8d3aa; }
+    .agent-name { font-weight: 900; font-size: 1.05rem; }
+    .agent-title { color: var(--muted); font-size: .87rem; }
+    .agent-rating { margin-top: 5px; color: #8b4a29; font-size: .82rem; font-weight: 750; }
+
+    .similar { margin-top: 46px; padding-top: 34px; border-top: 1px solid var(--line); }
+    .similar > p { color: var(--muted); margin: -7px 0 20px; }
+    .similar-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 18px; }
+    .listing-card { overflow: hidden; background: var(--card); border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 8px 24px rgba(25,42,30,.08); }
+    .listing-card img { height: 190px; background: #dce2db; }
+    .listing-card-body { padding: 16px; }
+    .listing-card-price { font: 800 1.3rem/1 Georgia, serif; }
+    .listing-card-facts { margin: 8px 0 3px; font-weight: 750; font-size: .9rem; }
+    .listing-card-place { color: var(--muted); font-size: .86rem; }
+
+    .edit-hint { display: none; margin: 0 0 18px; padding: 12px 15px; border: 1px dashed var(--copper); border-radius: 12px; color: #71361e; background: #fff0e7; }
+    body.editing .edit-hint { display: block; }
+    body.editing [contenteditable="true"] { outline: 2px dashed rgba(191,100,56,.55); outline-offset: 4px; border-radius: 4px; }
+    [contenteditable="true"]:focus { outline: 3px solid var(--gold) !important; background: #fff9ea; }
+    .saved-toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #15281c; color: white; border-radius: 999px; padding: 11px 18px; font-weight: 750; transition: .25s ease; z-index: 10; }
+    .saved-toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+    .lightbox {
+      position: fixed; inset: 0; z-index: 100; display: none; place-items: center;
+      padding: 64px 24px 24px; background: rgba(8, 13, 9, .92); backdrop-filter: blur(8px);
+    }
+    .lightbox.open { display: grid; }
+    .lightbox img { width: auto; height: auto; max-width: min(1400px, 96vw); max-height: calc(100vh - 88px); object-fit: contain; border-radius: 10px; box-shadow: 0 24px 80px rgba(0,0,0,.55); }
+    .lightbox-close { position: absolute; top: 16px; right: 18px; width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.45); border-radius: 50%; background: rgba(10,18,12,.8); color: white; font-size: 1.55rem; line-height: 1; }
+    .lightbox-close:hover, .lightbox-close:focus-visible { background: var(--copper); outline: 2px solid white; outline-offset: 2px; }
+    body.lightbox-open { overflow: hidden; }
+
+    footer { padding: 30px 24px; background: #111b14; color: #cbd5cc; text-align: center; font-size: .88rem; }
+    footer strong { color: white; }
+
+    @media (max-width: 820px) {
+      .site-header { height: auto; min-height: 68px; padding-top: 12px; padding-bottom: 12px; }
+      .parody-tag { display: none; }
+      main { padding-inline: 16px; }
+      .toolbar { align-items: flex-start; flex-direction: column; }
+      .gallery { grid-template-columns: 1fr 1fr; grid-template-rows: 260px 150px 150px; }
+      .photo-slot:first-child { grid-column: 1 / 3; grid-row: auto; }
+      .listing-grid { grid-template-columns: 1fr; gap: 18px; }
+      .price-card { position: static; }
+      .similar-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 520px) {
+      .actions { width: 100%; }
+      .actions .btn { flex: 1; padding-inline: 10px; }
+      .gallery { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; border-radius: 18px; }
+      .photo-slot, .photo-slot:first-child { min-width: 88%; height: 300px; scroll-snap-align: center; }
+      .feature-grid, .risk-grid, .landmarks, .similar-grid { grid-template-columns: 1fr; }
+    }
+    @media print {
+      .site-header, .toolbar, .card-cta, .edit-hint, footer { display: none !important; }
+      body { background: white; }
+      main { padding: 0; }
+      .gallery { height: 340px; box-shadow: none; }
+      .listing-grid { grid-template-columns: 1fr 300px; }
+      .price-card { box-shadow: none; position: static; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><span class="brand-mark"><span>ᚠ</span></span> Hearth &amp; Hammer</div>
+    <div class="parody-tag">Fictional Valheim realty • Fan-made parody</div>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <div class="breadcrumbs">Meadows &nbsp;/&nbsp; Birchwater Coast &nbsp;/&nbsp; Homesteads</div>
+      <div class="actions">
+        <button class="btn" id="shareBtn" type="button">↗ Share</button>
+        <button class="btn" id="editBtn" type="button" aria-pressed="false">✎ Edit details</button>
+        <button class="btn" id="printBtn" type="button">⌁ Print rune sheet</button>
+      </div>
+    </div>
+
+    <div class="gallery" aria-label="Property photo gallery">
+      <div class="photo-slot" data-slot="1">
+        <div class="placeholder"><span class="photo-icon">!</span><strong>Main exterior image unavailable</strong><small>Check the mainExterior URL in the HTML.</small></div>
+      </div>
+      <div class="photo-slot" data-slot="2"><div class="placeholder"><span class="photo-icon">!</span><strong>Cozy interior image unavailable</strong></div></div>
+      <div class="photo-slot" data-slot="3"><div class="placeholder"><span class="photo-icon">!</span><strong>Large hearth image unavailable</strong></div></div>
+      <div class="photo-slot" data-slot="4"><div class="placeholder"><span class="photo-icon">!</span><strong>Garden image unavailable</strong></div></div>
+      <div class="photo-slot" data-slot="5"><div class="placeholder"><span class="photo-icon">!</span><strong>Dock image unavailable</strong></div></div>
+    </div>
+
+    <div class="listing-grid">
+      <article>
+        <p class="edit-hint">Edit mode is on. Click any outlined text to rewrite it; your changes stay in this browser.</p>
+        <p class="eyebrow" data-edit="eyebrow">For sale by TURSLA & Co</p>
+        <h1 data-edit="title">Meadowhold</h1>
+        <p class="location" data-edit="location">Birchwater Coast, Meadows Biome • Seed: 12345678</p>
+        <div class="facts">
+          <div class="fact"><span data-edit="beds">3</span> Bed</div>
+          <div class="fact"><span data-edit="baths">0</span> Bath</div>
+          <div class="fact"><span data-edit="docks">1</span> Dock</div>
+          <div class="fact"><span data-edit="comfort">12</span> Comfort</div>
+        </div>
+        <div class="activity-strip" aria-label="Listing activity">
+          <div><strong data-edit="views">1,247</strong> views</div>
+          <div><strong data-edit="daysListed">18 days</strong> listed</div>
+          <div><strong data-edit="saves">42</strong> saved by Vikings</div>
+        </div>
+
+        <section class="copy">
+          <h2>A homestead worth sailing home to</h2>
+          <p class="description" data-edit="description">Settle into a cozy three-bed timber retreat built for good feasts and long evenings beside the large stone hearth. Outside, the spacious garden has plenty of room for crops and ambitious landscaping. Inside, look up to discover a one-of-a-kind ceiling sculpture crafted from a stack of copper ingots and a carefully arranged pile of coal. One bedroom even includes its own fermenter, keeping a fresh batch of mead within easy reach for those late-night Viking refreshments.</p>
+        </section>
+
+        <section class="copy">
+          <h2>Homestead highlights</h2>
+          <div class="feature-grid">
+            <div class="feature"><span class="rune">ᛟ</span><strong data-edit="feature1">Cozy interior</strong><p data-edit="feature1copy">Warm timber rooms with space for trophies, chests, and tired Vikings.</p></div>
+            <div class="feature"><span class="rune">ᚲ</span><strong data-edit="feature2">Large hearth</strong><p data-edit="feature2copy">A generous central fire for cooking, comfort, and weathering storms.</p></div>
+            <div class="feature"><span class="rune">ᛃ</span><strong data-edit="feature3">Spacious garden</strong><p data-edit="feature3copy">Room to cultivate carrots, turnips, onions, and ambitious landscaping.</p></div>
+            <div class="feature"><span class="rune">ᛚ</span><strong data-edit="feature4">Private dock</strong><p data-edit="feature4copy">Direct water access with berth for one longship or several suspicious rafts.</p></div>
+          </div>
+        </section>
+
+        <section class="copy">
+          <h2>Market value</h2>
+          <div class="panel">
+            <div class="panel-head"><h3>Estimated coin value</h3><span>Last 6 moons</span></div>
+            <svg class="value-chart" viewBox="0 0 640 250" role="img" aria-label="Estimated market value increased from 22,000 to 28,500 coins over six months">
+              <defs><linearGradient id="valueFade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bf6438" stop-opacity=".28"/><stop offset="1" stop-color="#bf6438" stop-opacity="0"/></linearGradient></defs>
+              <line class="chart-grid" x1="55" y1="35" x2="620" y2="35"/><line class="chart-grid" x1="55" y1="105" x2="620" y2="105"/><line class="chart-grid" x1="55" y1="175" x2="620" y2="175"/>
+              <text x="4" y="39">30k</text><text x="4" y="109">25k</text><text x="4" y="179">20k</text>
+              <path class="chart-area" d="M58 168 C135 157 180 145 235 151 S340 112 405 119 S510 78 615 48 L615 210 L58 210 Z"/>
+              <path class="chart-line" d="M58 168 C135 157 180 145 235 151 S340 112 405 119 S510 78 615 48"/>
+              <circle cx="615" cy="48" r="7" fill="#bf6438" stroke="#fffdf8" stroke-width="4"/>
+              <text x="55" y="236">6 moons ago</text><text x="555" y="236">Today</text>
+            </svg>
+          </div>
+        </section>
+
+        <section class="copy">
+          <h2>Climate &amp; creature risks</h2>
+          <div class="risk-grid">
+            <div class="risk"><div class="risk-top"><strong>Storm exposure</strong><span class="risk-score">Moderate</span></div><div class="risk-bar"><i style="width:52%"></i></div></div>
+            <div class="risk"><div class="risk-top"><strong>Forest movement</strong><span class="risk-score">Low</span></div><div class="risk-bar"><i style="width:26%"></i></div></div>
+            <div class="risk"><div class="risk-top"><strong>Troll activity</strong><span class="risk-score">Very low</span></div><div class="risk-bar"><i style="width:12%"></i></div></div>
+            <div class="risk"><div class="risk-top"><strong>Coastal flooding</strong><span class="risk-score">Moderate</span></div><div class="risk-bar"><i style="width:44%"></i></div></div>
+          </div>
+          <p class="fine-print">Fantasy estimates only. Consult your local seer before building.</p>
+        </section>
+
+        <section class="copy">
+          <h2>Nearby landmarks</h2>
+          <div class="landmarks">
+            <div class="landmark"><span class="landmark-icon">⚓</span><div><strong data-edit="landmark1">Birchwater Bay</strong><small data-edit="landmark1distance">1 minute by longship</small></div></div>
+            <div class="landmark"><span class="landmark-icon">ᚱ</span><div><strong data-edit="landmark2">Portal Hub</strong><small data-edit="landmark2distance">2 minutes on foot</small></div></div>
+            <div class="landmark"><span class="landmark-icon">🌲</span><div><strong data-edit="landmark3">Black Forest Edge</strong><small data-edit="landmark3distance">6 minutes by cart</small></div></div>
+            <div class="landmark"><span class="landmark-icon">🏪</span><div><strong data-edit="landmark4">Haldor's Trading Post</strong><small data-edit="landmark4distance">One portal jump</small></div></div>
+          </div>
+        </section>
+      </article>
+
+      <aside class="price-card" aria-label="Listing summary">
+        <div class="price" data-edit="price">28,500 coins</div>
+        <p class="price-note" data-edit="priceNote">Or best offer in iron, barley, and serpent stew.</p>
+        <div class="detail-row"><span>Biome</span><strong data-edit="biome">Meadows</strong></div>
+        <div class="detail-row"><span>Build</span><strong data-edit="build">Timber &amp; stone</strong></div>
+        <div class="detail-row"><span>Portal</span><strong data-edit="portal">Nearby</strong></div>
+        <div class="detail-row"><span>Raid readiness</span><strong data-edit="raid">Moderate</strong></div>
+        <button class="card-cta" id="contactBtn" type="button">Send a raven</button>
+        <p class="fine-print">No mortgage, appraisal, or actual ravens provided.</p>
+        <div class="agent">
+          <p class="agent-label">Listed by</p>
+          <div class="agent-profile">
+            <img class="agent-photo" id="agentPhoto" alt="Viking real-estate agent portrait">
+            <div><div class="agent-name" data-edit="agentName">Astrid Ironquill</div><div class="agent-title" data-edit="agentTitle">Licensed Longhouse Broker</div><div class="agent-rating">★★★★★ · 27 raids closed</div></div>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <section class="similar">
+      <h2>Other longhouses you may like</h2>
+      <p>More fictional homesteads from across the tenth realm.</p>
+      <div class="similar-grid">
+        <article class="listing-card"><img id="otherListing1" alt="Pinewatch Lodge listing"><div class="listing-card-body"><div class="listing-card-price" data-edit="otherPrice1">19,900 coins</div><div class="listing-card-facts">4 Bed · 1 Hearth · 0 Dock</div><div class="listing-card-place" data-edit="otherName1">Pinewatch Lodge · Forest</div></div></article>
+        <article class="listing-card"><img id="otherListing2" alt="Frostpeak Hall listing"><div class="listing-card-body"><div class="listing-card-price" data-edit="otherPrice2">23,000 coins</div><div class="listing-card-facts">1 Bed · 2 Hearth · Smeltery</div><div class="listing-card-place" data-edit="otherName2">Frostpeak Hall · Meadows</div></div></article>
+        <article class="listing-card"><img id="otherListing3" alt="Seafarer's Rest listing"><div class="listing-card-body"><div class="listing-card-price" data-edit="otherPrice3">41,750 coins</div><div class="listing-card-facts">2 Bed · 1 Dock · Ocean view</div><div class="listing-card-place" data-edit="otherName3">Seafarer's Rest · Plains</div></div></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><strong>Hearth &amp; Hammer</strong> is a fictional fan-made parody listing. Not affiliated with Zillow, Iron Gate AB, or Coffee Stain Publishing. Nothing here is for real-world sale.</footer>
+  <div class="saved-toast" id="toast" role="status" aria-live="polite">Changes saved on this device</div>
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Enlarged property photo" aria-hidden="true">
+    <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close enlarged image">×</button>
+    <img id="lightboxImage" alt="">
+  </div>
+
+  <script>
+    (() => {
+      /* ================================================================
+         REPLACE YOUR PHOTO LINKS HERE
+
+         Upload each screenshot to your preferred image-hosting website,
+         copy its DIRECT image link, and replace the matching URL below.
+         A direct link normally ends in .jpg, .png, .webp, or .gif.
+         ================================================================ */
+      const PHOTO_URLS = {
+        mainExterior: 'https://i.imgur.com/Ryhl2HA.jpeg',
+        cozyInterior: 'https://i.imgur.com/jpotiRi.jpeg',
+        largeHearth:  'https://i.imgur.com/hFMp5Yd.jpeg',
+        garden:       'https://i.imgur.com/VbR6Yht.jpeg',
+        dock:         'https://i.imgur.com/6BS12Se.jpeg',
+
+        /* Replace these four links when your extra images are ready. */
+        agentPortrait: 'https://i.imgur.com/Y1sIRTo.png',
+        otherListing1: 'https://i.imgur.com/gyOhXYT.png',
+        otherListing2: 'https://i.imgur.com/vayDDlE.jpeg',
+        otherListing3: 'https://i.imgur.com/bqW0zzI.jpeg'
+      };
+
+      const editButton = document.querySelector('#editBtn');
+      const toast = document.querySelector('#toast');
+      const lightbox = document.querySelector('#lightbox');
+      const lightboxImage = document.querySelector('#lightboxImage');
+      const lightboxClose = document.querySelector('#lightboxClose');
+      const editable = [...document.querySelectorAll('[data-edit]')];
+      let toastTimer;
+      let lastFocusedPhoto;
+
+      const notify = (message) => {
+        toast.textContent = message;
+        toast.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+      };
+
+      const savedText = JSON.parse(localStorage.getItem('meadowhold-details') || '{}');
+      editable.forEach(el => {
+        const key = el.dataset.edit;
+        if (savedText[key]) el.textContent = savedText[key];
+        el.addEventListener('input', () => {
+          const current = JSON.parse(localStorage.getItem('meadowhold-details') || '{}');
+          current[key] = el.textContent.trim();
+          localStorage.setItem('meadowhold-details', JSON.stringify(current));
+        });
+        el.addEventListener('blur', () => notify('Changes saved on this device'));
+      });
+
+      editButton.addEventListener('click', () => {
+        const editing = !document.body.classList.contains('editing');
+        document.body.classList.toggle('editing', editing);
+        editButton.setAttribute('aria-pressed', String(editing));
+        editButton.textContent = editing ? '✓ Finish editing' : '✎ Edit details';
+        editable.forEach(el => el.contentEditable = editing ? 'true' : 'false');
+        if (editing) editable[0].focus();
+      });
+
+      const displayImage = (slot, source) => {
+          slot.querySelector('img')?.remove();
+          slot.querySelector('.placeholder').hidden = true;
+          const image = document.createElement('img');
+          image.src = source;
+          image.alt = `Property photo ${slot.dataset.slot}`;
+          image.addEventListener('error', () => {
+            image.remove();
+            slot.querySelector('.placeholder').hidden = false;
+          }, { once: true });
+          slot.prepend(image);
+          slot.tabIndex = 0;
+          slot.setAttribute('role', 'button');
+          slot.setAttribute('aria-label', `Enlarge property photo ${slot.dataset.slot}`);
+      };
+
+      const openLightbox = (slot) => {
+        const image = slot.querySelector('img');
+        if (!image) return;
+        lastFocusedPhoto = slot;
+        lightboxImage.src = image.src;
+        lightboxImage.alt = image.alt;
+        lightbox.classList.add('open');
+        lightbox.setAttribute('aria-hidden', 'false');
+        document.body.classList.add('lightbox-open');
+        lightboxClose.focus();
+      };
+
+      const closeLightbox = () => {
+        lightbox.classList.remove('open');
+        lightbox.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('lightbox-open');
+        lightboxImage.removeAttribute('src');
+        lastFocusedPhoto?.focus();
+      };
+      const defaultPhotoLinks = [
+        PHOTO_URLS.mainExterior,
+        PHOTO_URLS.cozyInterior,
+        PHOTO_URLS.largeHearth,
+        PHOTO_URLS.garden,
+        PHOTO_URLS.dock
+      ];
+      document.querySelectorAll('.photo-slot').forEach(slot => {
+        const slotNumber = Number(slot.dataset.slot);
+        displayImage(slot, defaultPhotoLinks[slotNumber - 1]);
+        slot.addEventListener('click', () => openLightbox(slot));
+        slot.addEventListener('keydown', event => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openLightbox(slot);
+          }
+        });
+      });
+
+      const linkedImages = [
+        ['agentPhoto', PHOTO_URLS.agentPortrait],
+        ['otherListing1', PHOTO_URLS.otherListing1],
+        ['otherListing2', PHOTO_URLS.otherListing2],
+        ['otherListing3', PHOTO_URLS.otherListing3]
+      ];
+      linkedImages.forEach(([id, source]) => {
+        const image = document.getElementById(id);
+        image.src = source;
+        image.addEventListener('error', () => {
+          image.alt = `${image.alt} — image link unavailable`;
+          image.style.background = '#dce2db';
+        }, { once: true });
+      });
+
+      lightboxClose.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', event => {
+        if (event.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && lightbox.classList.contains('open')) closeLightbox();
+      });
+
+      document.querySelector('#printBtn').addEventListener('click', () => window.print());
+      document.querySelector('#shareBtn').addEventListener('click', async () => {
+        const shareData = {
+          title: document.title,
+          text: 'Take a look at this fictional Valheim homestead listing.',
+          url: window.location.href
+        };
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+          } else {
+            await navigator.clipboard.writeText(window.location.href);
+            notify('Listing link copied');
+          }
+        } catch (error) {
+          if (error.name !== 'AbortError') notify('Unable to share from this browser');
+        }
+      });
+      document.querySelector('#contactBtn').addEventListener('click', () => notify('Your raven is preparing for flight…'));
+    })();
+  </script>
+</body>
+</html>
