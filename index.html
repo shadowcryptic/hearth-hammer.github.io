@@ -349,7 +349,6 @@
         otherListing3: 'https://shadowcryptic.github.io/hearth-hammer.github.io/valheim_5cltwQPUp5.jpg'
       };
 
-      const editButton = document.querySelector('#editBtn');
       const toast = document.querySelector('#toast');
       const lightbox = document.querySelector('#lightbox');
       const lightboxImage = document.querySelector('#lightboxImage');
@@ -375,15 +374,6 @@
           localStorage.setItem('meadowhold-details', JSON.stringify(current));
         });
         el.addEventListener('blur', () => notify('Changes saved on this device'));
-      });
-
-      editButton.addEventListener('click', () => {
-        const editing = !document.body.classList.contains('editing');
-        document.body.classList.toggle('editing', editing);
-        editButton.setAttribute('aria-pressed', String(editing));
-        editButton.textContent = editing ? '✓ Finish editing' : '✎ Edit details';
-        editable.forEach(el => el.contentEditable = editing ? 'true' : 'false');
-        if (editing) editable[0].focus();
       });
 
       const displayImage = (slot, source) => {
